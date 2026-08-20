@@ -1,0 +1,81 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2026-08-20T09:58:10.559229"><title>無料でWebサーバを構築する方法 | MyDocument</title><script type="application/json" id="virtual-toc-data">[{"id":"1","level":0,"title":"1. 前提条件","anchor":"#1"},{"id":"2-vm","level":0,"title":"2. VMインスタンス作成","anchor":"#2-vm"},{"id":"3-ssh","level":0,"title":"3. SSHでログイン","anchor":"#3-ssh"},{"id":"4-nginx","level":0,"title":"4. Nginxをインストール","anchor":"#4-nginx"},{"id":"5","level":0,"title":"5. ブラウザで確認","anchor":"#5"},{"id":"6","level":0,"title":"6. ドキュメントを配置","anchor":"#6"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.28.0-b1262/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="無料でWebサーバを構築する方法 | MyDocument"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="MyDocument Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/how-to-build-a-web-server-for-free.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="無料でWebサーバを構築する方法 | MyDocument"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/how-to-build-a-web-server-for-free.html#webpage",
+    "url": "writerside-documentation/how-to-build-a-web-server-for-free.html",
+    "name": "無料でWebサーバを構築する方法 | MyDocument",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "MyDocument Help"
+}</script><!-- End Schema.org --></head><body data-id="how-to-build-a-web-server-for-free" data-main-title="無料でWebサーバを構築する方法" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs=""><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>MyDocument  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="how-to-build-a-web-server-for-free" id="how-to-build-a-web-server-for-free.md">無料でWebサーバを構築する方法</h1><p id="-8vhqxx_3">GoogleCloudの無料枠(Always Free)でWebサーバを構築する</p><section class="chapter"><h2 id="1" data-toc="1">1. 前提条件</h2><ul class="list _bullet" id="-8vhqxx_10"><li class="list__item" id="-8vhqxx_11"><p id="-8vhqxx_13">Googleアカウントを持っている</p></li><li class="list__item" id="-8vhqxx_12"><p id="-8vhqxx_14">Google Cloudにプロジェクト作成、クレジットカード登録済み</p></li></ul></section><section class="chapter"><h2 id="2-vm" data-toc="2-vm">2. VMインスタンス作成</h2><div class="table-wrapper"><table class="wide" id="-8vhqxx_15"><thead><tr class="ijRowHead" id="-8vhqxx_17"><th id="-8vhqxx_27"><p>項目</p></th><th id="-8vhqxx_28"><p>設定</p></th></tr></thead><tbody><tr id="-8vhqxx_18"><td id="-8vhqxx_29"><p>名前</p></td><td id="-8vhqxx_30"><p>任意</p></td></tr><tr id="-8vhqxx_19"><td id="-8vhqxx_31"><p>リージョン</p></td><td id="-8vhqxx_32"><p><code class="code" id="-8vhqxx_33">us-central1</code> （アイオワ） <br><code class="code" id="-8vhqxx_35">us-east1</code> （サウスカロライナ） <br><code class="code" id="-8vhqxx_37">us-west1</code> （オレゴン）</p></td></tr><tr id="-8vhqxx_20"><td id="-8vhqxx_38"><p>ゾーン</p></td><td id="-8vhqxx_39"><p>任意</p></td></tr><tr id="-8vhqxx_21"><td id="-8vhqxx_40"><p>マシンタイプ</p></td><td id="-8vhqxx_41"><p><span class="control" id="-8vhqxx_42">e2-micro</span></p></td></tr><tr id="-8vhqxx_22"><td id="-8vhqxx_43"><p>OS</p></td><td id="-8vhqxx_44"><p>Ubuntu</p></td></tr><tr id="-8vhqxx_23"><td id="-8vhqxx_45"><p>OSバージョン</p></td><td id="-8vhqxx_46"><p>Ubuntu 24.04 LTS</p></td></tr><tr id="-8vhqxx_24"><td id="-8vhqxx_47"><p>ブートディスク</p></td><td id="-8vhqxx_48"><p>Standard Persistent Disk （標準永続ディスク）</p></td></tr><tr id="-8vhqxx_25"><td id="-8vhqxx_49"><p>ディスク容量</p></td><td id="-8vhqxx_50"><p><span class="control" id="-8vhqxx_51">30GB</span> 以下</p></td></tr><tr id="-8vhqxx_26"><td id="-8vhqxx_52"><p>ファイアウォール</p></td><td id="-8vhqxx_53"><p>HTTP トラフィックを許可する<br> HTTPS トラフィックを許可する</p></td></tr></tbody></table></div></section><section class="chapter"><h2 id="3-ssh" data-toc="3-ssh">3. SSHでログイン</h2></section><section class="chapter"><h2 id="4-nginx" data-toc="4-nginx">4. Nginxをインストール</h2><div class="code-block" data-lang="bash">
+sudo apt update
+</div><div class="code-block" data-lang="bash">
+sudo apt install nginx -y
+</div><p id="-8vhqxx_58">Nginxを起動</p><div class="code-block" data-lang="bash">
+sudo systemctl enable nginx
+</div><div class="code-block" data-lang="bash">
+sudo systemctl start nginx
+</div><p id="-8vhqxx_61">状況確認</p><div class="code-block" data-lang="bash">
+sudo systemctl status nginx
+</div><p id="-8vhqxx_63"><code class="code" id="-8vhqxx_65">active (running)</code> となっていればOK</p></section><section class="chapter"><h2 id="5" data-toc="5">5. ブラウザで確認</h2><p id="-8vhqxx_66">VMの外部IPをブラウザのURL欄に貼り付けてアクセス</p><p id="-8vhqxx_67">外部IPが</p><div class="code-block" data-lang="none">
+34.xxx.xxx.xxx
+</div><p id="-8vhqxx_69">の場合、ブラウザで</p><div class="code-block" data-lang="none">
+http://34.xxx.xxx.xxx
+</div><p id="-8vhqxx_71">を開く。</p><div class="code-block" data-lang="none">
+Welcome to nginx!
+</div><p id="-8vhqxx_73">と表示されれば成功。</p></section><section class="chapter"><h2 id="6" data-toc="6">6. ドキュメントを配置</h2><p id="-8vhqxx_75">ドキュメントルート作成</p><div class="code-block" data-lang="none">
+/var/www/docs
+</div><p id="-8vhqxx_77">の場合</p><div class="code-block" data-lang="bash">
+sudo mkdir -p /var/www/docs
+</div><p id="-8vhqxx_79">所有者変更</p><div class="code-block" data-lang="bash">
+sudo chown -R $USER:$USER /var/www/docs
+</div><p id="-8vhqxx_81"><code class="code" id="-8vhqxx_86">/var/www/docs</code> 内に <code class="code" id="-8vhqxx_87">index.html</code> 作成</p><div class="code-block" data-lang="bash">
+nano /var/www/docs/index.html
+</div><p id="-8vhqxx_83">例）</p><div class="code-block" data-lang="markup">
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;ja&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;社内ドキュメント&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;社内ドキュメント&lt;/h1&gt;
+
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href=&quot;/manual/&quot;&gt;社内マニュアル&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;/development/&quot;&gt;開発ドキュメント&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;/operation/&quot;&gt;運用手順&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</div><section class="chapter"><h3 id="nginx" data-toc="nginx">Nginxをドキュメント用に設定</h3><p id="-8vhqxx_88">例えば、</p><div class="code-block" data-lang="bash">
+sudo nano /etc/nginx/sites-available/docs
+</div><p id="-8vhqxx_90">として、</p><div class="code-block" data-lang="bash">
+server {
+    listen 80;
+    server_name _;
+
+    root /var/www/docs;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+</div><p id="-8vhqxx_92">とする。</p><p id="-8vhqxx_93">有効化する</p><div class="code-block" data-lang="bash">
+sudo ln -s /etc/nginx/sites-available/docs /etc/nginx/sites-enabled/docs
+</div><p id="-8vhqxx_95">デフォルト設定を削除する</p><div class="code-block" data-lang="bash">
+sudo rm /etc/nginx/sites-enabled/default
+</div><p id="-8vhqxx_97">設定を確認</p><div class="code-block" data-lang="bash">
+sudo nginx -t
+</div><p id="-8vhqxx_99">問題なければリロード</p><div class="code-block" data-lang="bash">
+sudo systemctl reload nginx
+</div><div class="code-block" data-lang="bash">
+http://34.xxx.xxx.xxx/
+</div><p id="-8vhqxx_102">にアクセスして <code class="code" id="-8vhqxx_104">index.html</code> の内容が表示されればOK</p></section></section><div class="last-modified">20 8月 2026</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="starter-topic.html" class="navigation-links__prev">About MyDocument</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.28.0-b1262/app.js"></script></body></html>
