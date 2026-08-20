@@ -1,0 +1,216 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><meta name="built-on" content="2026-08-20T13:14:02.28829"><title>IndeedエントリとのATS連携について | MyDocument</title><script type="application/json" id="virtual-toc-data">[{"id":"z84tnir_3","level":0,"title":"概要","anchor":"#z84tnir_3"},{"id":"indeed-apply-laravel-7","level":0,"title":"Indeed Apply連携 - Laravel 7での受信処理の流れ","anchor":"#indeed-apply-laravel-7"},{"id":"z84tnir_5","level":0,"title":"実装のステップ","anchor":"#z84tnir_5"},{"id":"z84tnir_6","level":0,"title":"主要なポイント","anchor":"#z84tnir_6"},{"id":"indeed-apply-json","level":0,"title":"Indeed Apply 応募データ（JSON）の主要項目","anchor":"#indeed-apply-json"},{"id":"z84tnir_8","level":0,"title":"全体構造","anchor":"#z84tnir_8"},{"id":"1-applicant","level":0,"title":"1. 応募者情報（applicant）","anchor":"#1-applicant"},{"id":"2-job","level":0,"title":"2. 求人情報（job）","anchor":"#2-job"},{"id":"3-questions","level":0,"title":"3. スクリーナー質問の回答（questions）","anchor":"#3-questions"},{"id":"4","level":0,"title":"4. その他のメタ情報","anchor":"#4"},{"id":"json","level":0,"title":"完全なJSONサンプル","anchor":"#json"},{"id":"z84tnir_14","level":0,"title":"注意点","anchor":"#z84tnir_14"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.28.0-b1262/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="IndeedエントリとのATS連携について | MyDocument"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="MyDocument Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/about-ats-integration-with-an-indeed-entry.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="IndeedエントリとのATS連携について | MyDocument"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/about-ats-integration-with-an-indeed-entry.html#webpage",
+    "url": "writerside-documentation/about-ats-integration-with-an-indeed-entry.html",
+    "name": "IndeedエントリとのATS連携について | MyDocument",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "MyDocument Help"
+}</script><!-- End Schema.org --></head><body data-id="about-ats-integration-with-an-Indeed-entry" data-main-title="IndeedエントリとのATS連携について" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs=""><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>MyDocument  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="about-ats-integration-with-an-Indeed-entry" id="about-ats-integration-with-an-Indeed-entry.md">IndeedエントリとのATS連携について</h1><section class="chapter"><h2 id="z84tnir_3" data-toc="z84tnir_3"><span class="control" id="z84tnir_23">概要</span></h2><section class="chapter"><h3 id="ats" data-toc="ats">ATS連携とは</h3><p id="z84tnir_24">Indeed Applyは、求人応募システム（ATS: Applicant Tracking System）と連携することで、求人情報の掲載や応募者データの管理を効率化する機能です<a href="https://docs.indeed.com/indeed-apply/ats" id="z84tnir_25" data-external="true" rel="noopener noreferrer" target="_blank">[1]</a>。</p></section><section class="chapter"><h3 id="z84tnir_17" data-toc="z84tnir_17">主な特徴</h3></section><section class="chapter"><h3 id="1-xml" data-toc="1-xml">1. <span class="control" id="z84tnir_28">XMLフィードによる連携</span></h3><ul class="list _bullet" id="z84tnir_27"><li class="list__item" id="z84tnir_29"><p id="z84tnir_31">ATSからIndeedへ求人情報を配信するために、XMLフィードを作成・管理する必要があります<a href="https://docs.indeed.com/indeed-apply/ats" id="z84tnir_32" data-external="true" rel="noopener noreferrer" target="_blank">[1]</a></p></li><li class="list__item" id="z84tnir_30"><p id="z84tnir_33">このXMLドキュメントで求人内容やIndeedでの表示方法を定義します</p></li></ul></section><section class="chapter"><h3 id="2-ats-sync" data-toc="2-ats-sync">2. <span class="control" id="z84tnir_36">ATS Sync機能</span></h3><ul class="list _bullet" id="z84tnir_35"><li class="list__item" id="z84tnir_37"><p id="z84tnir_40">Indeedは世界中で<span class="control" id="z84tnir_41">350以上のATSプラットフォーム</span>と連携しています<a href="https://www.indeed.com/hire/ats-integration" id="z84tnir_42" data-external="true" rel="noopener noreferrer" target="_blank">[2]</a></p></li><li class="list__item" id="z84tnir_38"><p id="z84tnir_43">求人情報と候補者データをシームレスに転送</p></li><li class="list__item" id="z84tnir_39"><p id="z84tnir_44">手動データ入力を削減し、採用ワークフローを効率化します</p></li></ul></section><section class="chapter"><h3 id="3-indeed-apply" data-toc="3-indeed-apply">3. <span class="control" id="z84tnir_47">Indeed Applyのメリット</span></h3><ul class="list _bullet" id="z84tnir_46"><li class="list__item" id="z84tnir_48"><p id="z84tnir_52"><span class="control" id="z84tnir_53">モバイル最適化</span>された応募プロセスを提供</p></li><li class="list__item" id="z84tnir_49"><p id="z84tnir_54">候補者の離脱率を大幅に削減</p></li><li class="list__item" id="z84tnir_50"><p id="z84tnir_55">Indeed Apply対応求人は、非対応求人と比較して<span class="control" id="z84tnir_56">20%多くクリック</span>される傾向があります<a href="https://www.indeed.com/hire/resources/howtohub/indeed-ats-integrations" id="z84tnir_57" data-external="true" rel="noopener noreferrer" target="_blank">[7]</a></p></li><li class="list__item" id="z84tnir_51"><p id="z84tnir_58">完了した応募数が<span class="control" id="z84tnir_59">最大5倍増加</span>するケースも<a href="https://www.indeed.com/hire/resources/howtohub/indeed-ats-integrations" id="z84tnir_60" data-external="true" rel="noopener noreferrer" target="_blank">[7]</a></p></li></ul></section><section class="chapter"><h3 id="z84tnir_21" data-toc="z84tnir_21">連携の仕組み</h3><ol class="list _decimal" id="z84tnir_61" type="1"><li class="list__item" id="z84tnir_62"><p id="z84tnir_65"><span class="control" id="z84tnir_66">求人情報の同期</span>: ATSからIndeedへ自動的に求人情報を配信</p></li><li class="list__item" id="z84tnir_63"><p id="z84tnir_67"><span class="control" id="z84tnir_68">応募者データの同期</span>: Indeed経由の応募者情報をATSへ自動転送</p></li><li class="list__item" id="z84tnir_64"><p id="z84tnir_69"><span class="control" id="z84tnir_70">応募者ステータスの同期</span>: Disposition Sync APIを使用して、応募者のステータス情報をIndeedに送信可能<a href="https://docs.indeed.com/ja/disposition-sync-api/" id="z84tnir_71" data-external="true" rel="noopener noreferrer" target="_blank">[5]</a></p></li></ol></section><section class="chapter"><h3 id="ats" data-toc="ats">ATSパートナー向けガイドライン</h3><ul class="list _bullet" id="z84tnir_72"><li class="list__item" id="z84tnir_73"><p id="z84tnir_75">ATSは、雇用主または雇用主が指定したIndeed承認済みサードパーティがIndeed Applyを提供できます<a href="https://docs.indeed.com/ats-guidelines" id="z84tnir_76" data-external="true" rel="noopener noreferrer" target="_blank">[9]</a></p></li><li class="list__item" id="z84tnir_74"><p id="z84tnir_77">Indeed Applyを実装するATSパートナーは、Indeedの審査と承認が必要です</p></li></ul></section></section><section class="chapter"><h2 id="indeed-apply-laravel-7" data-toc="indeed-apply-laravel-7"><span class="control" id="z84tnir_80">Indeed Apply連携 - Laravel 7での受信処理の流れ</span></h2><figure id="z84tnir_79"><img alt="2026-08-20-001.png" src="images/2026-08-20-001.png" title="2026-08-20-001.png" width="1926" height="1158"></figure></section><section class="chapter"><h2 id="z84tnir_5" data-toc="z84tnir_5">実装のステップ</h2><section class="chapter"><h3 id="step-1-csrf" data-toc="step-1-csrf"><span class="control" id="z84tnir_87">Step 1: ルートの定義（CSRF除外が必要）</span></h3><p id="z84tnir_85">Indeedからのリクエストは外部からのPOSTなので、CSRF検証を除外する必要があります。</p><div class="code-block" data-lang="php">
+// routes/api.php に追加（CSRFミドルウェアが適用されない）
+Route::post('/indeed-apply/webhook', 'Api\IndeedApplyController@receive')
+    -&gt;name('indeed.apply.webhook');
+</div></section><section class="chapter"><h3 id="step-2" data-toc="step-2"><span class="control" id="z84tnir_90">Step 2: コントローラーの作成</span></h3><div class="code-block" data-lang="php">
+&lt;?php
+// app/Http/Controllers/Api/IndeedApplyController.php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
+class IndeedApplyController extends Controller
+{
+    /**
+     * Indeedからの応募データを受信
+     */
+    public function receive(Request $request)
+    {
+        // 1. 署名の検証（セキュリティ）
+        if (!$this-&gt;verifySignature($request)) {
+            Log::warning('Indeed Apply: 署名検証失敗');
+            return response()-&gt;json(['error' =&gt; 'Invalid signature'], 401);
+        }
+
+        // 2. JSONデータを取得
+        $payload = $request-&gt;getContent();
+        $data = json_decode($payload, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            Log::error('Indeed Apply: JSONパースエラー');
+            return response()-&gt;json(['error' =&gt; 'Invalid JSON'], 400);
+        }
+
+        // 3. ログに記録（デバッグ用）
+        Log::info('Indeed Apply: 応募受信', ['job_id' =&gt; $data['job']['jobId'] ?? 'unknown']);
+
+        // 4. 応募データを保存
+        try {
+            $this-&gt;saveApplication($data);
+        } catch (\Exception $e) {
+            Log::error('Indeed Apply: 保存エラー', ['error' =&gt; $e-&gt;getMessage()]);
+            // ※ POSTの応答では検証エラーを返さないこと（Indeedの要件）
+            // 保存に失敗しても2XXを返し、後で処理する
+        }
+
+        // 5. 成功レスポンス（必ず2XXを返す）
+        return response()-&gt;json(['status' =&gt; 'received'], 200);
+    }
+
+    /**
+     * HMAC-SHA1署名を検証
+     */
+    private function verifySignature(Request $request)
+    {
+        $signature = $request-&gt;header('X-Indeed-Signature');
+        $secret = config('services.indeed.api_secret'); // .envから取得
+        $payload = $request-&gt;getContent();
+
+        $expectedSignature = base64_encode(hash_hmac('sha1', $payload, $secret, true));
+
+        return hash_equals($expectedSignature, $signature);
+    }
+
+    /**
+     * 応募データをDBに保存
+     */
+    private function saveApplication(array $data)
+    {
+        // applicationsテーブルなどに保存
+        // $data の構造例:
+        // - $data['applicant']['fullName'] : 氏名
+        // - $data['applicant']['email'] : メールアドレス
+        // - $data['applicant']['phoneNumber'] : 電話番号
+        // - $data['applicant']['resume']['file']['data'] : 履歴書(Base64)
+        // - $data['job']['jobId'] : 求人ID
+        // - $data['questions'] : スクリーナー質問の回答
+        
+        // TODO: 実際の保存ロジックを実装
+    }
+}
+</div></section><section class="chapter"><h3 id="step-3" data-toc="step-3"><span class="control" id="z84tnir_94">Step 3: 環境設定</span></h3><div class="code-block" data-lang="php">
+// config/services.php に追加
+'indeed' =&gt; [
+    'api_token' =&gt; env('INDEED_API_TOKEN'),
+    'api_secret' =&gt; env('INDEED_API_SECRET'),
+],
+</div><div class="code-block" data-lang="bash">
+# .env に追加
+INDEED_API_TOKEN=your_api_token_here
+INDEED_API_SECRET=your_api_secret_here
+</div></section></section><section class="chapter"><h2 id="z84tnir_6" data-toc="z84tnir_6">主要なポイント</h2><div class="table-wrapper"><table class="wide" id="z84tnir_95"><thead><tr class="ijRowHead" id="z84tnir_96"><th id="z84tnir_103"><p>ポイント</p></th><th id="z84tnir_104"><p>説明</p></th></tr></thead><tbody><tr id="z84tnir_97"><td id="z84tnir_105"><p><span class="control" id="z84tnir_107">エンドポイントURL</span></p></td><td id="z84tnir_106"><p><code class="code" id="z84tnir_108">https://your-domain.com/api/indeed-apply/webhook</code> をIndeedに登録</p></td></tr><tr id="z84tnir_98"><td id="z84tnir_109"><p><span class="control" id="z84tnir_111">HTTPS必須</span></p></td><td id="z84tnir_110"><p>Indeed ApplyはHTTPSのみ対応</p></td></tr><tr id="z84tnir_99"><td id="z84tnir_112"><p><span class="control" id="z84tnir_114">必ず2XXを返す</span></p></td><td id="z84tnir_113"><p>応募データの内容に問題があっても、受信成功時は2XXを返す</p></td></tr><tr id="z84tnir_100"><td id="z84tnir_115"><p><span class="control" id="z84tnir_117">署名検証</span></p></td><td id="z84tnir_116"><p><code class="code" id="z84tnir_118">X-Indeed-Signature</code>ヘッダーでリクエストの正当性を検証</p></td></tr><tr id="z84tnir_101"><td id="z84tnir_119"><p><span class="control" id="z84tnir_121">リダイレクト禁止</span></p></td><td id="z84tnir_120"><p>301/302リダイレクトは使用不可</p></td></tr><tr id="z84tnir_102"><td id="z84tnir_122"><p><span class="control" id="z84tnir_124">重複判定</span></p></td><td id="z84tnir_123"><p>同じ求人ID + 同じメール + 120日以内 = 重複</p></td></tr></tbody></table></div></section><section class="chapter"><h2 id="indeed-apply-json" data-toc="indeed-apply-json"><span class="control" id="z84tnir_126">Indeed Apply 応募データ（JSON）の主要項目</span></h2></section><section class="chapter"><h2 id="z84tnir_8" data-toc="z84tnir_8"><span class="control" id="z84tnir_129">全体構造</span></h2><div class="code-block" data-lang="json">
+{
+  &quot;applicant&quot;: { ... },      // 応募者情報
+  &quot;job&quot;: { ... },            // 求人情報
+  &quot;questions&quot;: [ ... ],      // スクリーナー質問の回答
+  &quot;applicationId&quot;: &quot;...&quot;,    // Indeed側の応募ID
+  &quot;appliedOnMillis&quot;: 1234567890000  // 応募日時（ミリ秒）
+}
+</div></section><section class="chapter"><h2 id="1-applicant" data-toc="1-applicant">1. 応募者情報（applicant）</h2><div class="table-wrapper"><table class="wide" id="z84tnir_130"><thead><tr class="ijRowHead" id="z84tnir_132"><th id="z84tnir_138"><p>項目</p></th><th id="z84tnir_139"><p>キー</p></th><th id="z84tnir_140"><p>説明</p></th></tr></thead><tbody><tr id="z84tnir_133"><td id="z84tnir_141"><p>氏名</p></td><td id="z84tnir_142"><p><code class="code" id="z84tnir_144">fullName</code></p></td><td id="z84tnir_143"><p>フルネーム</p></td></tr><tr id="z84tnir_134"><td id="z84tnir_145"><p>メール</p></td><td id="z84tnir_146"><p><code class="code" id="z84tnir_148">email</code></p></td><td id="z84tnir_147"><p>メールアドレス</p></td></tr><tr id="z84tnir_135"><td id="z84tnir_149"><p>電話番号</p></td><td id="z84tnir_150"><p><code class="code" id="z84tnir_152">phoneNumber</code></p></td><td id="z84tnir_151"><p>電話番号</p></td></tr><tr id="z84tnir_136"><td id="z84tnir_153"><p>住所</p></td><td id="z84tnir_154"><p><code class="code" id="z84tnir_156">location</code></p></td><td id="z84tnir_155"><p>住所・地域</p></td></tr><tr id="z84tnir_137"><td id="z84tnir_157"><p>履歴書</p></td><td id="z84tnir_158"><p><code class="code" id="z84tnir_160">resume</code></p></td><td id="z84tnir_159"><p>履歴書データ（下記参照）</p></td></tr></tbody></table></div><section class="chapter"><h3 id="resume-file" data-toc="resume-file"><span class="control" id="z84tnir_165">履歴書データ（resume.file）</span></h3><div class="code-block" data-lang="json">
+{
+  &quot;applicant&quot;: {
+    &quot;fullName&quot;: &quot;山田 太郎&quot;,
+    &quot;email&quot;: &quot;taro.yamada@example.com&quot;,
+    &quot;phoneNumber&quot;: &quot;090-1234-5678&quot;,
+    &quot;location&quot;: &quot;東京都渋谷区&quot;,
+    &quot;resume&quot;: {
+      &quot;file&quot;: {
+        &quot;contentType&quot;: &quot;application/pdf&quot;,
+        &quot;fileName&quot;: &quot;resume.pdf&quot;,
+        &quot;data&quot;: &quot;Base64エンコードされたファイルデータ...&quot;
+      },
+      &quot;text&quot;: &quot;履歴書のテキスト版（パース済み）&quot;
+    }
+  }
+}
+</div><div class="table-wrapper"><table class="wide" id="z84tnir_163"><thead><tr class="ijRowHead" id="z84tnir_166"><th id="z84tnir_171"><p>項目</p></th><th id="z84tnir_172"><p>キー</p></th><th id="z84tnir_173"><p>説明</p></th></tr></thead><tbody><tr id="z84tnir_167"><td id="z84tnir_174"><p>ファイル形式</p></td><td id="z84tnir_175"><p><code class="code" id="z84tnir_177">contentType</code></p></td><td id="z84tnir_176"><p><code class="code" id="z84tnir_178">application/pdf</code>, <code class="code" id="z84tnir_179">application/msword</code> など</p></td></tr><tr id="z84tnir_168"><td id="z84tnir_180"><p>ファイル名</p></td><td id="z84tnir_181"><p><code class="code" id="z84tnir_183">fileName</code></p></td><td id="z84tnir_182"><p><code class="code" id="z84tnir_184">resume.pdf</code> など</p></td></tr><tr id="z84tnir_169"><td id="z84tnir_185"><p>ファイル本体</p></td><td id="z84tnir_186"><p><code class="code" id="z84tnir_188">data</code></p></td><td id="z84tnir_187"><p><span class="control" id="z84tnir_189">Base64エンコード</span>された履歴書ファイル</p></td></tr><tr id="z84tnir_170"><td id="z84tnir_190"><p>テキスト版</p></td><td id="z84tnir_191"><p><code class="code" id="z84tnir_193">text</code></p></td><td id="z84tnir_192"><p>履歴書の内容をテキスト化したもの</p></td></tr></tbody></table></div><p id="z84tnir_164"><span class="control" id="z84tnir_194">対応ファイル形式</span>: <code class="code" id="z84tnir_195">.txt</code>, <code class="code" id="z84tnir_196">.pdf</code>, <code class="code" id="z84tnir_197">.doc</code>, <code class="code" id="z84tnir_198">.docx</code>, <code class="code" id="z84tnir_199">.rtf</code></p></section></section><section class="chapter"><h2 id="2-job" data-toc="2-job"><span class="control" id="z84tnir_203">2. 求人情報（job）</span></h2><div class="code-block" data-lang="json">
+{
+  &quot;job&quot;: {
+    &quot;jobId&quot;: &quot;JOB-12345&quot;,
+    &quot;jobTitle&quot;: &quot;営業職&quot;,
+    &quot;jobCompanyName&quot;: &quot;株式会社サンプル&quot;,
+    &quot;jobLocation&quot;: &quot;東京都渋谷区&quot;,
+    &quot;jobUrl&quot;: &quot;https://www.example.com/jobs/12345&quot;
+  }
+}
+</div><div class="table-wrapper"><table class="wide" id="z84tnir_202"><thead><tr class="ijRowHead" id="z84tnir_204"><th id="z84tnir_210"><p>項目</p></th><th id="z84tnir_211"><p>キー</p></th><th id="z84tnir_212"><p>説明</p></th></tr></thead><tbody><tr id="z84tnir_205"><td id="z84tnir_213"><p>求人ID</p></td><td id="z84tnir_214"><p><code class="code" id="z84tnir_216">jobId</code></p></td><td id="z84tnir_215"><p>XMLフィードで設定したID（ルーキーWeb側の求人IDと紐付け）</p></td></tr><tr id="z84tnir_206"><td id="z84tnir_217"><p>職種名</p></td><td id="z84tnir_218"><p><code class="code" id="z84tnir_220">jobTitle</code></p></td><td id="z84tnir_219"><p>求人タイトル</p></td></tr><tr id="z84tnir_207"><td id="z84tnir_221"><p>会社名</p></td><td id="z84tnir_222"><p><code class="code" id="z84tnir_224">jobCompanyName</code></p></td><td id="z84tnir_223"><p>企業名</p></td></tr><tr id="z84tnir_208"><td id="z84tnir_225"><p>勤務地</p></td><td id="z84tnir_226"><p><code class="code" id="z84tnir_228">jobLocation</code></p></td><td id="z84tnir_227"><p>勤務地</p></td></tr><tr id="z84tnir_209"><td id="z84tnir_229"><p>求人URL</p></td><td id="z84tnir_230"><p><code class="code" id="z84tnir_232">jobUrl</code></p></td><td id="z84tnir_231"><p>求人詳細ページのURL</p></td></tr></tbody></table></div></section><section class="chapter"><h2 id="3-questions" data-toc="3-questions"><span class="control" id="z84tnir_236">3. スクリーナー質問の回答（questions）</span></h2><div class="code-block" data-lang="json">
+{
+  &quot;questions&quot;: [
+    {
+      &quot;id&quot;: &quot;work_authorization&quot;,
+      &quot;question&quot;: &quot;日本での就労資格はありますか？&quot;,
+      &quot;answer&quot;: &quot;Yes&quot;
+    },
+    {
+      &quot;id&quot;: &quot;years_experience&quot;,
+      &quot;question&quot;: &quot;業界経験年数を教えてください&quot;,
+      &quot;answer&quot;: &quot;5&quot;
+    },
+    {
+      &quot;id&quot;: &quot;available_start_date&quot;,
+      &quot;question&quot;: &quot;入社可能日はいつですか？&quot;,
+      &quot;answer&quot;: &quot;2026-03-01&quot;
+    },
+    {
+      &quot;id&quot;: &quot;skills&quot;,
+      &quot;question&quot;: &quot;お持ちのスキルを選択してください&quot;,
+      &quot;answer&quot;: [&quot;Excel&quot;, &quot;PowerPoint&quot;, &quot;営業経験&quot;]
+    }
+  ]
+}
+</div><div class="table-wrapper"><table class="wide" id="z84tnir_235"><thead><tr class="ijRowHead" id="z84tnir_237"><th id="z84tnir_241"><p>項目</p></th><th id="z84tnir_242"><p>キー</p></th><th id="z84tnir_243"><p>説明</p></th></tr></thead><tbody><tr id="z84tnir_238"><td id="z84tnir_244"><p>質問ID</p></td><td id="z84tnir_245"><p><code class="code" id="z84tnir_247">id</code></p></td><td id="z84tnir_246"><p>質問の識別子（JSON設定時に指定したもの）</p></td></tr><tr id="z84tnir_239"><td id="z84tnir_248"><p>質問文</p></td><td id="z84tnir_249"><p><code class="code" id="z84tnir_251">question</code></p></td><td id="z84tnir_250"><p>質問の内容</p></td></tr><tr id="z84tnir_240"><td id="z84tnir_252"><p>回答</p></td><td id="z84tnir_253"><p><code class="code" id="z84tnir_255">answer</code></p></td><td id="z84tnir_254"><p>応募者の回答（文字列または配列）</p></td></tr></tbody></table></div></section><section class="chapter"><h2 id="4" data-toc="4"><span class="control" id="z84tnir_259">4. その他のメタ情報</span></h2><div class="code-block" data-lang="json">
+{
+  &quot;applicationId&quot;: &quot;abc123def456&quot;,
+  &quot;appliedOnMillis&quot;: 1707465600000,
+  &quot;locale&quot;: &quot;ja_JP&quot;,
+  &quot;schemaVersion&quot;: &quot;1.2&quot;
+}
+</div><div class="table-wrapper"><table class="wide" id="z84tnir_258"><thead><tr class="ijRowHead" id="z84tnir_260"><th id="z84tnir_265"><p>項目</p></th><th id="z84tnir_266"><p>キー</p></th><th id="z84tnir_267"><p>説明</p></th></tr></thead><tbody><tr id="z84tnir_261"><td id="z84tnir_268"><p>応募ID</p></td><td id="z84tnir_269"><p><code class="code" id="z84tnir_271">applicationId</code></p></td><td id="z84tnir_270"><p>Indeed側で発行される一意のID</p></td></tr><tr id="z84tnir_262"><td id="z84tnir_272"><p>応募日時</p></td><td id="z84tnir_273"><p><code class="code" id="z84tnir_275">appliedOnMillis</code></p></td><td id="z84tnir_274"><p>UNIX時間（ミリ秒）</p></td></tr><tr id="z84tnir_263"><td id="z84tnir_276"><p>ロケール</p></td><td id="z84tnir_277"><p><code class="code" id="z84tnir_279">locale</code></p></td><td id="z84tnir_278"><p>言語・地域（<code class="code" id="z84tnir_280">ja_JP</code>など）</p></td></tr><tr id="z84tnir_264"><td id="z84tnir_281"><p>スキーマVer</p></td><td id="z84tnir_282"><p><code class="code" id="z84tnir_284">schemaVersion</code></p></td><td id="z84tnir_283"><p>データ形式のバージョン</p></td></tr></tbody></table></div></section><section class="chapter"><h2 id="json" data-toc="json"><span class="control" id="z84tnir_287">完全なJSONサンプル</span></h2><div class="code-block" data-lang="json">
+{
+  &quot;applicationId&quot;: &quot;abc123def456ghi789&quot;,
+  &quot;appliedOnMillis&quot;: 1707465600000,
+  &quot;locale&quot;: &quot;ja_JP&quot;,
+  &quot;schemaVersion&quot;: &quot;1.2&quot;,
+  &quot;applicant&quot;: {
+    &quot;fullName&quot;: &quot;山田 太郎&quot;,
+    &quot;email&quot;: &quot;taro.yamada@example.com&quot;,
+    &quot;phoneNumber&quot;: &quot;090-1234-5678&quot;,
+    &quot;location&quot;: &quot;東京都渋谷区&quot;,
+    &quot;resume&quot;: {
+      &quot;file&quot;: {
+        &quot;contentType&quot;: &quot;application/pdf&quot;,
+        &quot;fileName&quot;: &quot;yamada_resume.pdf&quot;,
+        &quot;data&quot;: &quot;JVBERi0xLjQKJeLjz9MKMyAwIG9...&quot;
+      },
+      &quot;text&quot;: &quot;【職務経歴】\n株式会社○○ 営業部...&quot;
+    }
+  },
+  &quot;job&quot;: {
+    &quot;jobId&quot;: &quot;rookie-job-12345&quot;,
+    &quot;jobTitle&quot;: &quot;法人営業&quot;,
+    &quot;jobCompanyName&quot;: &quot;株式会社サンプル&quot;,
+    &quot;jobLocation&quot;: &quot;東京都渋谷区&quot;,
+    &quot;jobUrl&quot;: &quot;https://rookie-web.example.com/jobs/12345&quot;
+  },
+  &quot;questions&quot;: [
+    {
+      &quot;id&quot;: &quot;work_authorization&quot;,
+      &quot;question&quot;: &quot;日本での就労資格はありますか？&quot;,
+      &quot;answer&quot;: &quot;Yes&quot;
+    },
+    {
+      &quot;id&quot;: &quot;years_experience&quot;, 
+      &quot;question&quot;: &quot;営業経験年数&quot;,
+      &quot;answer&quot;: &quot;3&quot;
+    }
+  ]
+}
+</div></section><section class="chapter"><h2 id="z84tnir_14" data-toc="z84tnir_14">注意点</h2><div class="table-wrapper"><table class="wide" id="z84tnir_288"><thead><tr class="ijRowHead" id="z84tnir_289"><th id="z84tnir_294"><p>ポイント</p></th><th id="z84tnir_295"><p>説明</p></th></tr></thead><tbody><tr id="z84tnir_290"><td id="z84tnir_296"><p><span class="control" id="z84tnir_298">すべての項目が必ず存在するわけではない</span></p></td><td id="z84tnir_297"><p>欠落しているフィールドは空として扱う</p></td></tr><tr id="z84tnir_291"><td id="z84tnir_299"><p><span class="control" id="z84tnir_301">認識できないフィールドは無視する</span></p></td><td id="z84tnir_300"><p>将来的に新しいフィールドが追加される可能性あり</p></td></tr><tr id="z84tnir_292"><td id="z84tnir_302"><p><span class="control" id="z84tnir_304">履歴書はBase64デコードが必要</span></p></td><td id="z84tnir_303"><p><code class="code" id="z84tnir_305">$data['applicant']['resume']['file']['data']</code> をデコードしてファイル保存</p></td></tr><tr id="z84tnir_293"><td id="z84tnir_306"><p><span class="control" id="z84tnir_308">jobIdでルーキーWebの求人と紐付け</span></p></td><td id="z84tnir_307"><p>XMLフィードで設定したIDがそのまま送られてくる</p></td></tr></tbody></table></div></section><div class="last-modified">20 8月 2026</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="how-to-build-a-web-server-for-free.html" class="navigation-links__prev">無料でWebサーバを構築する方法</a><a href="starter-topic.html" class="navigation-links__next">About MyDocument</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.28.0-b1262/app.js"></script></body></html>
